@@ -5,11 +5,27 @@ import DestinationImg from "./assets/Destination1.png";
 import travelToVid from "./assets/travel-to-1.mp4";
 import returnFromVid from "./assets/return-from-1.mp4";
 import styled from "styled-components";
+import DesinationComponent from "./components/DestinationComponent";
 
-const StyledImage = styled.img`
+const destination = {
+  name: "destination1",
+  button: {},
+  travelVid: travelToVid,
+  returnVid: returnFromVid,
+  destinationImg: DestinationImg,
+  popup: {},
+};
+
+const initialState = {
+  userLocation: "home",
+  destinations: [destination],
+  modalStatus: false,
+};
+
+const StyledHomeImage = styled.img`
   position: absolute;
   display: block;
-  z-index: ${props => props.isDisplaying ? '1' : '0'};
+  z-index: ${(props) => (props.isDisplaying ? "1" : "0")};
   max-width: 100%;
   height: auto;
 `;
@@ -17,7 +33,7 @@ const StyledImage = styled.img`
 const StyledVideo = styled.video`
   position: absolute;
   display: block;
-  z-index: ${props => props.isDisplaying ? '1': '0'};
+  z-index: ${(props) => (props.isDisplaying ? "1" : "0")};
   max-width: 100%;
   height: auto;
 `;
@@ -25,7 +41,7 @@ const StyledVideo = styled.video`
 const StartButton = styled.button`
   display: ${(props) => (props.buttonDisplay ? "block" : "none")};
   position: absolute;
-  z-index: ${props => props.zIndexValue ? '0' : '10'};
+  z-index: ${(props) => (props.zIndexValue ? "0" : "10")};
   top: 25px;
   left: 25px;
 `;
@@ -33,7 +49,7 @@ const StartButton = styled.button`
 const ReturnButton = styled.button`
   display: ${(props) => (props.buttonDisplay ? "block" : "none")};
   position: absolute;
-  z-index: ${props => props.zIndexValue ? '0' : '10'};
+  z-index: ${(props) => (props.zIndexValue ? "0" : "10")};
   top: 25px;
   right: 25px;
 `;
@@ -46,7 +62,7 @@ const App = () => {
   const [isVideoPlaying, updateIsVideoPlaying] = useState(false);
   const vidRef = useRef(null);
 
-  const handleNavigationClick = (e) => {
+  const handleNavigateToClick = (e) => {
     e.preventDefault();
     updateIsDisplaying(!isDisplaying);
     toggleImageSrc();
@@ -72,29 +88,25 @@ const App = () => {
 
   return (
     <div className="App">
-      <StartButton onClick={handleNavigationClick} buttonDisplay={buttonDisplay} zIndexValue={isVideoPlaying}>
+      <StartButton
+        onClick={handleNavigateToClick}
+        buttonDisplay={buttonDisplay}
+        zIndexValue={isVideoPlaying}
+      >
         START
       </StartButton>
-      <ReturnButton onClick={handleNavigationClick} buttonDisplay={!buttonDisplay} zIndexValue={isVideoPlaying}>
-        RETURN
-      </ReturnButton>
-      <StyledImage src={imageSource} alt="booth scene image" isDisplaying={isDisplaying}/>
-      <StyledVideo
-        ref={vidRef}
-        controls={false}
-        autoPlay={false}
-        muted
-        src={videoSource}
-        alt="travel to video 1"
-        onEnded={() => {
-          updateIsVideoPlaying(false);
-          setButtonDisplay(!buttonDisplay);
-          updateIsDisplaying(!isDisplaying);
-          toggleVideoSrc();
-        }}
-        isDisplaying={!isDisplaying}
+      <StyledHomeImage
+        src={imageSource}
+        alt="booth scene image"
+        isDisplaying={isDisplaying}
       />
-      <video />
+      {initialState.destinations &&
+        initialState.destinations.map((destination) => (
+          <DesinationComponent
+            destinationObj={destination}
+            handleNavigateToClick={handleNavigateToClick}
+          />
+        ))}
     </div>
   );
 };
