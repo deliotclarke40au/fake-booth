@@ -1,17 +1,18 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import {useHistory} from 'react-router-dom';
 import styled from "styled-components";
 
 const ReturnButton = styled.button`
-  display: ${(props) => (props.buttonDisplay ? "block" : "none")};
+  display: block;
   position: absolute;
-  z-index: ${(props) => (props.zIndexValue ? "0" : "10")};
+  z-index: 10;
   top: 25px;
   right: 25px;
 `;
 
 const StyledImage = styled.img`
   position: absolute;
-  display: block;
+  display: ${(props) => (props.isDisplaying ? "block" : "none")};
   z-index: ${(props) => (props.isDisplaying ? "1" : "0")};
   max-width: 100%;
   height: auto;
@@ -25,54 +26,61 @@ const StyledVideo = styled.video`
   height: auto;
 `;
 
-const DestinationComponent = (destinationObject = {}, handleNavigateToClick) => {
-  let { travelVid, returnVid, destinationImg, popup } = destinationObject;
-  const [buttonDisplay, setButtonDisplay] = useState(false);
+const DestinationComponent = ({ destination }) => {
+  let { travelVid, returnVid, destinationImg, popup } = destination;
+  const [buttonDisplay, setButtonDisplay] = useState(true);
   const [videoSource, setVideoSource] = useState(travelVid);
+  const [isDisplaying, updateIsDisplaying] = useState(true);
+  const [isVideoPlaying, updateIsVideoPlaying] = useState(false);
+  const [returnPlay, setReturnPlay] = useState(false);
   const vidRef = useRef(null);
-  if (Object.keys(destinationObject).length) {
+  const history = useHistory();
 
-    const toggleVideoSrc = () => {
-      if (videoSource === travelVid) {
-        setVideoSource(returnVid);
-      } else {
-        setVideoSource(travelVid);
-      }
-    };
-
-    return (
-      <div>
-        <ReturnButton
-          onClick={handleNavigateToClick}
-          buttonDisplay={!buttonDisplay}
-          zIndexValue={isVideoPlaying}
-        >
-          RETURN
-        </ReturnButton>
-        <StyledImage
-          src={imageSource}
-          alt="booth scene image"
-          isDisplaying={isDisplaying}
-        />
-        <StyledVideo
-          ref={vidRef}
-          controls={false}
-          autoPlay={false}
-          muted
-          src={videoSource}
-          alt="travel to video 1"
-          onEnded={() => {
-            updateIsVideoPlaying(false);
-            setButtonDisplay(!buttonDisplay);
-            updateIsDisplaying(!isDisplaying);
-            toggleVideoSrc();
-          }}
-          isDisplaying={!isDisplaying}
-        />
-      </div>
-    );
+  function startNavigateHomeVideo() {
+    setReturnPlay(true);
+    updateIsDisplaying(!isDisplaying);
+    vidRef.current.play();
   }
-  return null;
+
+  function startNavigateToVideo() {
+    vidRef.current.play();
+    updateIsVideoPlaying(true);
+  }
+
+  function returnHome() {
+    history.push("/");
+  }
+
+  const toggleVideoSrc = () => {
+    if (videoSource === travelVid) {
+      setVideoSource(returnVid);
+    }
+  };
+
+  useEffect(() => {
+    startNavigateToVideo();
+  }, []);
+
+  return (
+    <div>
+      <StyledVideo
+        ref={vidRef}
+        src={videoSource}
+        isDisplaying={isDisplaying}
+        onEnded={() => {
+          if (returnPlay) {
+            returnHome();
+          }
+          updateIsVideoPlaying(false);
+          updateIsDisplaying(!isDisplaying);
+          setButtonDisplay(!buttonDisplay);
+          toggleVideoSrc();
+        }}
+      />
+      <StyledImage src={destinationImg} isDisplaying={!isDisplaying} />
+      <ReturnButton onClick={startNavigateHomeVideo}>RETURN</ReturnButton>
+    </div>
+  );
 };
 
 export default DestinationComponent;
