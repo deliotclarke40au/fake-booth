@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import {useHistory} from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 
 const ReturnButton = styled.button`
   display: block;
   position: absolute;
-  z-index: 10;
+  z-index: ${(props) => (props.isDisplaying ? "10" : "0")};
   top: 25px;
   right: 25px;
 `;
@@ -27,7 +27,7 @@ const StyledVideo = styled.video`
 `;
 
 const DestinationComponent = ({ destination }) => {
-  let { travelVid, returnVid, destinationImg, popup } = destination;
+  let { travelVid, returnVid, destinationImg, popups } = destination;
   const [buttonDisplay, setButtonDisplay] = useState(true);
   const [videoSource, setVideoSource] = useState(travelVid);
   const [isDisplaying, updateIsDisplaying] = useState(true);
@@ -78,7 +78,12 @@ const DestinationComponent = ({ destination }) => {
         }}
       />
       <StyledImage src={destinationImg} isDisplaying={!isDisplaying} />
-      <ReturnButton onClick={startNavigateHomeVideo}>RETURN</ReturnButton>
+      <ReturnButton
+        onClick={startNavigateHomeVideo}
+        isDisplaying={!isDisplaying}
+      >
+        RETURN
+      </ReturnButton>
     </div>
   );
 };
