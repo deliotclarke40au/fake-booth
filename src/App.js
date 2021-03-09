@@ -1,41 +1,58 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import HomeImg from "./assets/Home.png";
-import DestinationImg from "./assets/Destination1.png";
-import travelToVid from "./assets/travel-to-1.mp4";
-import returnFromVid from "./assets/return-from-1.mp4";
-import Home from "./pages/Home";
-import DestinationComponent from "./components/DestinationComponent";
-import NavBarComponent from "./components/NavBarComponent";
+import React, { useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
+import HomeImg from './assets/Home.png';
+import DestinationImg from './assets/Destination1.png';
+import DestinationImg2 from './assets/Destination2.png';
+import travelToVid from './assets/travel-to-1.mp4';
+import returnFromVid from './assets/return-from-1.mp4';
+import travelToVid2 from './assets/travel-to-2.mp4';
+import returnFromVid2 from './assets/return-from-2.mp4';
+import Home from './pages/Home';
+import DestinationComponent from './components/DestinationComponent';
+import NavBarComponent from './components/NavBarComponent';
 
 const destination = {
-  name: "destination1",
+  id: 'destination1',
+  name: 'Destination 1',
   button: {},
+  front: true,
   travelVid: travelToVid,
   returnVid: returnFromVid,
   destinationImg: DestinationImg,
   popups: {},
 };
 
+const destination2 = {
+  id: 'destination2',
+  name: 'Destination 2',
+  button: {},
+  front: true,
+  travelVid: travelToVid2,
+  returnVid: returnFromVid2,
+  destinationImg: DestinationImg2,
+  popups: {},
+};
+
 const initialState = {
   homeImage: HomeImg,
-  destinations: [destination],
+  destinations: [destination, destination2],
   modalStatus: false,
 };
 
 const App = () => {
-  function startNavigateHomeVideo() {}
-  const [currentDest, updateCurrentDest] = useState("home");
+  const [currentDest, updateCurrentDest] = useState('home');
 
   function selectDestination(destinationStr) {
-    return initialState.destinations.find(dest => dest.name === destinationStr);
+    return initialState.destinations.find(
+      (dest) => dest.name === destinationStr
+    );
   }
 
   // rip out react router?
   // create a nav at app level and create onClicks that load the background image and cue the traveToVid to play - component swaps video itself and any return plays returnToVid?
 
   return (
-    <Router>
+    <>
       {/* // ? feed updateCurrentDest to Nav Buttons - Component creates a list of
       buttons based on destination names, updates currentDest with destination
       name */}
@@ -45,7 +62,7 @@ const App = () => {
       />
       <div>
         <Switch>
-          <Route exact path="/">
+          <Route exact path='/'>
             <Home homeImage={initialState.homeImage} />
           </Route>
           {/* {
@@ -63,14 +80,14 @@ const App = () => {
           {initialState.destinations &&
             initialState.destinations.map((destination) => {
               return (
-                <Route key={destination.name} path={`/${destination.name}`}>
+                <Route key={destination.id} path={`/${destination.id}`}>
                   <DestinationComponent destination={destination} />
                 </Route>
               );
             })}
         </Switch>
       </div>
-    </Router>
+    </>
   );
 };
 
