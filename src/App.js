@@ -61,10 +61,8 @@ const App = () => {
         updateCurrentDest={updateCurrentDest}
       />
       <div>
+        <Home homeImage={initialState.homeImage} />
         <Switch>
-          <Route exact path='/'>
-            <Home homeImage={initialState.homeImage} />
-          </Route>
           {/* {
             // ? i think this will actually work! - onEnded after toggleVid on returnPlay resets currentDest to 'home'
             currentDest && currentDest === "home" ? (
@@ -76,15 +74,11 @@ const App = () => {
               />
             )
           } */}
-
-          {initialState.destinations &&
-            initialState.destinations.map((destination) => {
-              return (
-                <Route key={destination.id} path={`/${destination.id}`}>
-                  <DestinationComponent destination={destination} />
-                </Route>
-              );
-            })}
+          {initialState.destinations.map((destination) => (
+            <Route key={destination.id} path={`/${destination.id}`}>
+              <DestinationComponent destination={destination} />
+            </Route>
+          ))}
         </Switch>
       </div>
     </>
