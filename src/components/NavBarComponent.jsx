@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
 
@@ -39,42 +39,34 @@ const NavList = styled.ul`
 `;
 
 // ? default button component to to start building custom nav
-const NavButton = styled(NavLink)`
+const NavButton = styled.button`
   background: #135c97;
   margin-bottom: 1rem;
   text-decoration: none;
   color: #fff;
   font-weight: bold;
+  border: 0;
   border-radius: 30px;
   padding: 1rem 1rem;
   text-align: center;
+  outline: none;
+  cursor: pointer;
 `;
 
-const NavBarComponent = ({ destinations }) => {
-  const [showNav, updateShowNav] = useState(false);
-  const nodeRef = useRef(null);
+const NavBarComponent = ({ destinations, onNavigate }) => {
   const { pathname } = useLocation();
   console.log(pathname);
-
-  useEffect(() => {
-    if (pathname === '/') {
-      updateShowNav(true);
-    } else {
-      updateShowNav(false);
-    }
-  }, [pathname]);
 
   return (
     <NavBarContainer>
       <CSSTransition
-        nodeRef={nodeRef}
-        in={showNav}
+        in={true}
         timeout={900}
         unmountOnExit
         mountOnEnter
-        classNames='navBar'
+        classNames="navBar"
       >
-        <NavBar ref={nodeRef}>
+        <NavBar>
           <NavList>
             {/* <NavButton>
               <NavLink className='nav-item' activeClassName='is-active' to='/'>
@@ -82,18 +74,18 @@ const NavBarComponent = ({ destinations }) => {
               </NavLink>
             </NavButton> */}
             {destinations &&
-              destinations.map((destination) => {
-                return (
+              destinations
+                .filter((d) => !pathname.includes(d.id))
+                .map((d) => (
                   <NavButton
-                    key={destination.id}
-                    className='nav-item'
-                    activeClassName='is-active'
-                    to={destination.id}
+                    key={d.id}
+                    className="nav-item"
+                    //activeClassName='is-active'
+                    onClick={() => onNavigate(d)}
                   >
-                    {destination.name}
+                    {d.name}
                   </NavButton>
-                );
-              })}
+                ))}
           </NavList>
         </NavBar>
       </CSSTransition>
