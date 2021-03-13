@@ -38,6 +38,7 @@ const App = () => {
             <DestinationComponent
               destination={destination}
               nextDestination={nextDestination}
+              onChangeDestination={setNextDestination}
             />
           </Route>
         ))}

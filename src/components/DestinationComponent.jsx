@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { isChildOf, getTransitionsBetween } from '../destinations';
+import { isChildOf, getTransitionsBetween, getParent } from '../destinations';
 import styled from 'styled-components';
 
 const Background = styled.img`
@@ -10,6 +10,7 @@ const Background = styled.img`
 `;
 
 const Transition = styled.video`
+  pointer-events: none;
   position: absolute;
   width: 100%;
 `;
@@ -30,9 +31,14 @@ const GoBack = styled.button`
   outline: none;
 `;
 
-const DestinationComponent = ({ destination, nextDestination }) => {
+const DestinationComponent = ({
+  destination,
+  nextDestination,
+  onChangeDestination,
+}) => {
   const history = useHistory();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const parent = getParent(destination);
 
   const _transition = useRef(null);
   const _destination = useRef(null);
@@ -46,15 +52,21 @@ const DestinationComponent = ({ destination, nextDestination }) => {
       setIsTransitioning(true);
       const transitions = getTransitionsBetween(destination, nextDestination);
       await transitions
-        .map((t, i) => ({
-          transition:
-            !transitions[i + 1] || isChildOf(transitions[i + 1], t)
-              ? t.transitionIn
-              : t.transitionOut,
-          background: transitions[i + 1]
-            ? transitions[i + 1].background
-            : t.background,
-        }))
+        .map((t, i) => {
+          const next = transitions[i + 1];
+          if (next) {
+            return {
+              transition: isChildOf(next, t) ? t.transitionOut : t.transitionIn,
+              background: next.background,
+            };
+          }
+
+          const prev = transitions[i - 1];
+          return {
+            transition: isChildOf(prev, t) ? t.transitionIn : t.transitionOut,
+            background: t.background,
+          };
+        })
         .filter(({ transition }) => transition)
         .reduce(async (doTransition, { background, transition }) => {
           await doTransition;
@@ -74,12 +86,19 @@ const DestinationComponent = ({ destination, nextDestination }) => {
     };
 
     doTransitions();
-  }, [destination, history, nextDestination]);
+  }, [history, destination, nextDestination]);
 
   return (
     <>
       <Background ref={_destination} src={destination.background} />
-      <GoBack hidden={isTransitioning}>BACK</GoBack>
+      {parent && (
+        <GoBack
+          hidden={isTransitioning}
+          onClick={() => onChangeDestination(parent)}
+        >
+          BACK
+        </GoBack>
+      )}
       <Transition ref={_transition} muted />
     </>
   );

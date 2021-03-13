@@ -7,14 +7,18 @@ import transitionInVid2 from './assets/travel-to-2.mp4';
 import transitionOutVid2 from './assets/return-from-2.mp4';
 
 const getPathToDestination = (destination, parent) => {
-  return Object.entries(parent).reduce((path, [key, value]) => {
-    if (key === destination?.id) {
-      return [value];
+  if (!parent) {
+    return [];
+  }
+
+  return Object.entries(parent?.children || {}).reduce((path, [id, node]) => {
+    if (id === destination?.id) {
+      return [node];
     }
 
-    const next = getPathToDestination(destination, value.children || {});
+    const next = getPathToDestination(destination, node);
     if (next.length) {
-      return [...path, value, ...next];
+      return [...path, node, ...next];
     }
 
     return path;
@@ -26,12 +30,20 @@ export const getTransitionsBetween = (source, destination) => {
     return [];
   }
 
-  const [, ...fromRoot] = getPathToDestination(destination, destinations);
-  return [...getPathToDestination(source, destinations).reverse(), ...fromRoot];
+  return [
+    ...getPathToDestination(source, destinations).reverse(),
+    ...getPathToDestination(destination, destinations),
+  ];
 };
 
 export const isChildOf = (parent, child) => {
   return getPathToDestination(child, parent).length > 0;
+};
+
+export const getParent = (child) => {
+  const [, parent] = getPathToDestination(child, destinations).reverse();
+
+  return parent;
 };
 
 export const destination1 = {
@@ -77,6 +89,9 @@ export const back = {
 };
 
 export const destinations = {
-  home,
-  back,
+  id: 'root',
+  children: {
+    home,
+    back,
+  },
 };
