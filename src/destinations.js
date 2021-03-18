@@ -1,10 +1,10 @@
 import HomeImg from './assets/Home.png';
 import DestinationImg from './assets/Destination1.png';
 import DestinationImg2 from './assets/Destination2.png';
-import transitionInVid from './assets/travel-to-1.mp4';
-import transitionOutVid from './assets/return-from-1.mp4';
-import transitionInVid2 from './assets/travel-to-2.mp4';
-import transitionOutVid2 from './assets/return-from-2.mp4';
+import transitionInVid from './assets/travel-to-1.ogm';
+import transitionOutVid from './assets/return-from-1.ogm';
+import transitionInVid2 from './assets/travel-to-2.ogv';
+import transitionOutVid2 from './assets/return-from-2.ogv';
 
 const getPathToDestination = (destination, parent) => {
   if (!parent) {
