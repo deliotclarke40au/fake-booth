@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { isChildOf, getTransitionsBetween, getParent } from '../destinations';
+import { memoize } from '../memoize';
+import {
+  isChildOf as _isChildOf,
+  getTransitionsBetween as _getTransitionsBetween,
+  getParent as _getParent,
+} from '../destinations';
 import styled from 'styled-components';
 
 const Background = styled.img`
@@ -31,6 +36,10 @@ const GoBack = styled.button`
   outline: none;
 `;
 
+const getParent = memoize(_getParent);
+const isChildOf = memoize(_isChildOf);
+const getTransitionsBetween = memoize(_getTransitionsBetween);
+
 const DestinationComponent = ({
   destination,
   nextDestination,
@@ -44,7 +53,7 @@ const DestinationComponent = ({
   const _destination = useRef(null);
 
   useEffect(() => {
-    if (!nextDestination) {
+    if (!nextDestination || nextDestination?.id === destination?.id) {
       return;
     }
 

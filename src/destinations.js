@@ -11,8 +11,8 @@ const getPathToDestination = (destination, parent) => {
     return [];
   }
 
-  return Object.entries(parent?.children || {}).reduce((path, [id, node]) => {
-    if (id === destination?.id) {
+  return Object.values(parent?.children || {}).reduce((path, node) => {
+    if (node?.id === destination?.id) {
       return [node];
     }
 
@@ -26,7 +26,7 @@ const getPathToDestination = (destination, parent) => {
 };
 
 export const getTransitionsBetween = (source, destination) => {
-  if (source === destination) {
+  if (source?.id === destination?.id) {
     return [];
   }
 
